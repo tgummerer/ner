@@ -52,9 +52,17 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
 
     makeSelectionVisible();
 
+    std::map<std::string, std::string> _generalKeymap = NerConfig::instance().getGeneralKeyMap();
+
     /* Key Sequences */
-    addHandledSequence("\n", std::bind(&ThreadView::openSelectedMessage, this));
-    addHandledSequence("r", std::bind(&ThreadView::reply, this));
+    if (_generalKeymap.count("open") == 1)
+	addHandledSequence(_generalKeymap.find("open")->second, std::bind(&ThreadView::openSelectedMessage, this));
+    else
+	addHandledSequence("\n", std::bind(&ThreadView::openSelectedMessage, this));
+    if (_generalKeymap.count("reply") == 1)
+	addHandledSequence(_generalKeymap.find("reply")->second, std::bind(&ThreadView::reply, this));
+    else
+	addHandledSequence("r", std::bind(&ThreadView::reply, this));
 }
 
 ThreadView::~ThreadView()

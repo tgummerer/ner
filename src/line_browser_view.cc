@@ -21,27 +21,43 @@
 
 #include "line_browser_view.hh"
 #include "view_manager.hh"
+#include "ner_config.hh"
 
 LineBrowserView::LineBrowserView(const View::Geometry & geometry)
     : WindowView(geometry),
         _selectedIndex(0),
         _offset(0)
 {
+    std::map<std::string, std::string> _keymap = NerConfig::instance().getGeneralKeyMap();
+
     /* Key Sequences */
-    addHandledSequence("j",          std::bind(&LineBrowserView::next, this));
-    addHandledSequence("<Down>",     std::bind(&LineBrowserView::next, this));
-    addHandledSequence("k",          std::bind(&LineBrowserView::previous, this));
-    addHandledSequence("<Up>",       std::bind(&LineBrowserView::previous, this));
+    if (_keymap.count("next") == 1)
+	addHandledSequence(_keymap.find("next")->second, std::bind(&LineBrowserView::next, this));
+    else
+	addHandledSequence("<Down>", std::bind(&LineBrowserView::next, this));
+    if (_keymap.count("previous") == 1)
+	addHandledSequence(_keymap.find("previous")->second, std::bind(&LineBrowserView::previous, this));
+    else
+	addHandledSequence("<Up>", std::bind(&LineBrowserView::previous, this));
 
-    addHandledSequence("<PageDown>", std::bind(&LineBrowserView::nextPage, this));
-    addHandledSequence("<C-d>",      std::bind(&LineBrowserView::nextPage, this));
-    addHandledSequence("<PageUp>",   std::bind(&LineBrowserView::previousPage, this));
-    addHandledSequence("<C-u>",      std::bind(&LineBrowserView::previousPage, this));
+    if (_keymap.count("nextPage") == 1)
+	addHandledSequence(_keymap.find("nextPage")->second, std::bind(&LineBrowserView::nextPage, this));
+    else
+	addHandledSequence("<PageDown>", std::bind(&LineBrowserView::nextPage, this));
 
-    addHandledSequence("gg",         std::bind(&LineBrowserView::moveToTop, this));
-    addHandledSequence("<Home>",     std::bind(&LineBrowserView::moveToTop, this));
-    addHandledSequence("G",          std::bind(&LineBrowserView::moveToBottom, this));
-    addHandledSequence("<End>",      std::bind(&LineBrowserView::moveToBottom, this));
+    if (_keymap.count("previousPage") == 1)
+	addHandledSequence(_keymap.find("previousPage")->second, std::bind(&LineBrowserView::previousPage, this));
+    else
+	addHandledSequence("<PageUp>", std::bind(&LineBrowserView::previousPage, this));
+
+    if (_keymap.count("top") == 1)
+	addHandledSequence(_keymap.find("top")->second, std::bind(&LineBrowserView::moveToTop, this));
+    else
+	addHandledSequence("<Home>", std::bind(&LineBrowserView::moveToTop, this));
+    if (_keymap.count("bottom") == 1)
+	addHandledSequence(_keymap.find("bottom")->second, std::bind(&LineBrowserView::moveToBottom, this));
+    else
+	addHandledSequence("<End>", std::bind(&LineBrowserView::moveToBottom, this));
 }
 
 void LineBrowserView::resize(const View::Geometry & geometry)

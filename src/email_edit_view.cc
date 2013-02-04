@@ -44,12 +44,29 @@ EmailEditView::EmailEditView(const View::Geometry & geometry)
         "Subject"
     });
 
+    std::map<std::string, std::string> _keymap = NerConfig::instance().getEmailKeyMap();
+
     /* Key Sequences */
-    addHandledSequence("e", std::bind(&EmailEditView::edit, this));
-    addHandledSequence("a", std::bind(&EmailEditView::attach, this));
-    addHandledSequence("d", std::bind(&EmailEditView::removeSelectedAttachment, this));
-    addHandledSequence("y", std::bind(&EmailEditView::send, this));
-    addHandledSequence("f", std::bind(&EmailEditView::toggleSelectedPartFolding, this));
+    if (_keymap.count("edit") == 1)
+	addHandledSequence(_keymap.find("edit")->second, std::bind(&EmailEditView::edit, this));
+    else
+	addHandledSequence("e", std::bind(&EmailEditView::edit, this));
+    if (_keymap.count("attach") == 1)
+	addHandledSequence(_keymap.find("attach")->second, std::bind(&EmailEditView::attach, this));
+    else
+	addHandledSequence("a", std::bind(&EmailEditView::attach, this));
+    if (_keymap.count("removeAttachement") == 1)
+	addHandledSequence(_keymap.find("removeAttachement")->second, std::bind(&EmailEditView::removeSelectedAttachment, this));
+    else
+	addHandledSequence("d", std::bind(&EmailEditView::removeSelectedAttachment, this));
+    if (_keymap.count("send") == 1)
+	addHandledSequence(_keymap.find("send")->second, std::bind(&EmailEditView::send, this));
+    else
+	addHandledSequence("y", std::bind(&EmailEditView::send, this));
+    if (_keymap.count("toggleFolding") == 1)
+	addHandledSequence(_keymap.find("toggleFolding")->second, std::bind(&EmailView::toggleSelectedPartFolding, this));
+    else
+	addHandledSequence("f", std::bind(&EmailEditView::toggleSelectedPartFolding, this));
 }
 
 EmailEditView::~EmailEditView()

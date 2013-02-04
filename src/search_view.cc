@@ -33,6 +33,7 @@
 #include "notmuch.hh"
 #include "status_bar.hh"
 #include "line_editor.hh"
+#include "ner_config.hh"
 
 const int newestDateWidth = 13;
 const int messageCountWidth = 8;
@@ -47,14 +48,32 @@ SearchView::SearchView(const std::string & search, const View::Geometry & geomet
     _collecting = true;
     _thread = std::thread(std::bind(&SearchView::collectThreads, this));
 
+    std::map<std::string, std::string> _keymap = NerConfig::instance().getSearchKeyMap();
+    std::map<std::string, std::string> _generalKeymap = NerConfig::instance().getGeneralKeyMap();
+
     /* Key Sequences */
-    addHandledSequence("=", std::bind(&SearchView::refreshThreads, this));
-    addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
+    if (_keymap.count("refreshThreads") == 1)
+	addHandledSequence(_keymap.find("refreshThreads")->second, std::bind(&SearchView::refreshThreads, this));
+    else
+	addHandledSequence("=", std::bind(&SearchView::refreshThreads, this));
+    if (_generalKeymap.count("open") == 1)
+	addHandledSequence(_generalKeymap.find("open")->second, std::bind(&SearchView::openSelectedThread, this));
+    else
+	addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
 
-    addHandledSequence("a", std::bind(&SearchView::archiveSelectedThread, this));
+    if (_generalKeymap.count("archiveThread") == 1)
+	addHandledSequence(_generalKeymap.find("archiveThread")->second, std::bind(&SearchView::archiveSelectedThread, this));
+    else
+	addHandledSequence("a", std::bind(&SearchView::archiveSelectedThread, this));
 
-    addHandledSequence("+", std::bind(&SearchView::addTags, this));
-    addHandledSequence("-", std::bind(&SearchView::removeTags, this));
+    if (_generalKeymap.count("addTags") == 1)
+	addHandledSequence(_generalKeymap.find("addTags")->second, std::bind(&SearchView::addTags, this));
+    else
+	addHandledSequence("+", std::bind(&SearchView::addTags, this));
+    if (_generalKeymap.count("removeTags") == 1)
+	addHandledSequence(_generalKeymap.find("removeTags")->second, std::bind(&SearchView::removeTags, this));
+    else
+	addHandledSequence("-", std::bind(&SearchView::removeTags, this));
 
     std::unique_lock<std::mutex> lock(_mutex);
     while (_threads.size() < getmaxy(_window) && _collecting)

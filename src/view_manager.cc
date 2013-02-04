@@ -23,6 +23,7 @@
 #include "view.hh"
 #include "view_view.hh"
 #include "status_bar.hh"
+#include "ner_config.hh"
 
 ViewManager * ViewManager::_instance = 0;
 
@@ -30,7 +31,12 @@ ViewManager::ViewManager()
 {
     _instance = this;
 
-    addHandledSequence("q", std::bind(&ViewManager::closeActiveView, this));
+    std::map<std::string, std::string> _keymap = NerConfig::instance().getGeneralKeyMap();
+
+    if (_keymap.count("closeView") == 1)
+	addHandledSequence(_keymap.find("closeView")->second, std::bind(&ViewManager::closeActiveView, this));
+    else
+	addHandledSequence("q", std::bind(&ViewManager::closeActiveView, this));
 }
 
 ViewManager::~ViewManager()

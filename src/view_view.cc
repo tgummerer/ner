@@ -20,6 +20,7 @@
 #include "view_view.hh"
 #include "view_manager.hh"
 #include "ncurses.hh"
+#include "ner_config.hh"
 
 #include <sstream>
 #include <iterator>
@@ -29,9 +30,17 @@ const int nameWidth = 25;
 ViewView::ViewView(const View::Geometry & geometry)
     : LineBrowserView(geometry)
 {
+    std::map<std::string, std::string> _keymap = NerConfig::instance().getGeneralKeyMap();
+
     /* Key Sequences */
-    addHandledSequence("\n", std::bind(&ViewView::openSelectedView, this));
-    addHandledSequence("x", std::bind(&ViewView::closeSelectedView, this));
+    if (_keymap.count("open") == 1)
+	addHandledSequence(_keymap.find("open")->second, std::bind(&ViewView::openSelectedView, this));
+    else
+	addHandledSequence("\n", std::bind(&ViewView::openSelectedView, this));
+    if (_keymap.count("closeSelectedView") == 1)
+	addHandledSequence(_keymap.find("closeSelectedView")->second, std::bind(&ViewView::closeSelectedView, this));
+    else
+	addHandledSequence("x", std::bind(&ViewView::closeSelectedView, this));
 }
 
 ViewView::~ViewView()

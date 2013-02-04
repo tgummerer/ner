@@ -38,15 +38,48 @@
 
 Ner::Ner()
 {
+    std::map<std::string, std::string> _keymap = NerConfig::instance().getMainKeyMap();
+
     /* Key Sequences */
-    addHandledSequence("Q",     std::bind(&Ner::quit, this));
-    addHandledSequence("s",     std::bind(&Ner::search, this));
-    addHandledSequence("m",     std::bind(&Ner::compose, this));
-    addHandledSequence("M",     std::bind(&Ner::openMessage, this));
-    addHandledSequence("T",     std::bind(&Ner::openThread, this));
-    addHandledSequence(";",     std::bind(&Ner::openViewView, this));
-    addHandledSequence("<C-l>", std::bind(&Ner::redraw, this));
-    addHandledSequence("<C-z>", std::bind(&kill, getpid(), SIGTSTP));
+    if (_keymap.count("Quit") == 1)
+	addHandledSequence(_keymap.find("Quit")->second, std::bind(&Ner::quit, this));
+    else
+	addHandledSequence("Q", std::bind(&Ner::quit, this));
+
+    if (_keymap.count("search") == 1)
+	addHandledSequence(_keymap.find("search")->second, std::bind(&Ner::search, this));
+    else
+	addHandledSequence("s", std::bind(&Ner::search, this));
+
+    if (_keymap.count("compose") == 1)
+	addHandledSequence(_keymap.find("compose")->second, std::bind(&Ner::compose, this));
+    else
+	addHandledSequence("m", std::bind(&Ner::compose, this));
+
+    if (_keymap.count("openMessage") == 1)
+        addHandledSequence(_keymap.find("openMessage")->second, std::bind(&Ner::openMessage, this));
+    else
+	addHandledSequence("M", std::bind(&Ner::openMessage, this));
+
+    if (_keymap.count("openThread") == 1)
+        addHandledSequence(_keymap.find("openThread")->second, std::bind(&Ner::openThread, this));
+    else
+	addHandledSequence("T", std::bind(&Ner::openThread, this));
+
+    if (_keymap.count("openViewView") == 1)
+        addHandledSequence(_keymap.find("openViewView")->second, std::bind(&Ner::openViewView, this));
+    else
+	addHandledSequence(";", std::bind(&Ner::openViewView, this));
+
+    if (_keymap.count("redraw") == 1)
+        addHandledSequence(_keymap.find("redraw")->second, std::bind(&Ner::redraw, this));
+    else
+	addHandledSequence("<C-l>", std::bind(&Ner::redraw, this));
+
+    if (_keymap.count("sigstp") == 1)
+        addHandledSequence(_keymap.find("sigstp")->second, std::bind(&kill, getpid(), SIGTSTP));
+    else
+	addHandledSequence("<C-z>", std::bind(&kill, getpid(), SIGTSTP));
 }
 
 Ner::~Ner()

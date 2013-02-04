@@ -43,11 +43,22 @@ class NerConfig
 
         bool addSigDashes() const;
 
+        const std::map<std::string, std::string> getGeneralKeyMap();
+        const std::map<std::string, std::string> getMainKeyMap();
+        const std::map<std::string, std::string> getEmailKeyMap();
+        const std::map<std::string, std::string> getSearchKeyMap();
+        const std::map<std::string, std::string> getThreadViewKeyMap();
+
     private:
         NerConfig();
         ~NerConfig();
 
         std::map<std::string, std::string> _commands;
+        std::map<std::string, std::string> _generalKeys;
+        std::map<std::string, std::string> _mainWindowKeys;
+        std::map<std::string, std::string> _emailKeys;
+        std::map<std::string, std::string> _searchKeys;
+        std::map<std::string, std::string> _threadViewKeys;
         std::vector<Search> _searches;
         notmuch_sort_t _sortMode;
         bool _refreshView;

@@ -24,6 +24,7 @@
 #include "notmuch.hh"
 #include "colors.hh"
 #include "line_editor.hh"
+#include "ner_config.hh"
 
 const int threadViewHeight = 8;
 
@@ -36,32 +37,67 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
 {
     loadSelectedMessage();
 
+    std::map<std::string, std::string> _generalKeymap = NerConfig::instance().getGeneralKeyMap();
+    std::map<std::string, std::string> _keymap = NerConfig::instance().getThreadViewKeyMap();
+
     /* Key Sequences */
-    addHandledSequence("j",          std::bind(&MessageView::next, &_messageView));
-    addHandledSequence("<Down>",     std::bind(&MessageView::next, &_messageView));
-    addHandledSequence("k",          std::bind(&MessageView::previous, &_messageView));
-    addHandledSequence("<Up>",       std::bind(&MessageView::previous, &_messageView));
+    if (_generalKeymap.count("next") == 1)
+	addHandledSequence(_generalKeymap.find("next")->second, std::bind(&MessageView::next, &_messageView));
+    else
+	addHandledSequence("<Down>", std::bind(&MessageView::next, &_messageView));
+    if (_generalKeymap.count("previous") == 1)
+	addHandledSequence(_generalKeymap.find("previous")->second, std::bind(&MessageView::previous, &_messageView));
+    else
+	addHandledSequence("<Up>", std::bind(&MessageView::previous, &_messageView));
 
-    addHandledSequence("<PageDown>", std::bind(&MessageView::nextPage, &_messageView));
-    addHandledSequence("<C-d>",      std::bind(&MessageView::nextPage, &_messageView));
-    addHandledSequence("<PageUp>",   std::bind(&MessageView::previousPage, &_messageView));
-    addHandledSequence("<C-u>",      std::bind(&MessageView::previousPage, &_messageView));
+    if (_generalKeymap.count("nextPage") == 1)
+	addHandledSequence(_generalKeymap.find("nextPage")->second, std::bind(&MessageView::nextPage, &_messageView));
+    else
+	addHandledSequence("<PageDown>", std::bind(&MessageView::nextPage, &_messageView));
+    if (_generalKeymap.count("previousPage") == 1)
+	addHandledSequence(_generalKeymap.find("previousPage")->second, std::bind(&MessageView::previousPage, &_messageView));
+    else
+	addHandledSequence("<PageUp>", std::bind(&MessageView::previousPage, &_messageView));
 
-    addHandledSequence("gg",         std::bind(&MessageView::moveToTop, &_messageView));
-    addHandledSequence("<Home>",     std::bind(&MessageView::moveToTop, &_messageView));
-    addHandledSequence("G",          std::bind(&MessageView::moveToBottom, &_messageView));
-    addHandledSequence("<End>",      std::bind(&MessageView::moveToBottom, &_messageView));
-    addHandledSequence("<C-s>",      std::bind(&MessageView::saveSelectedPart, &_messageView));
-    addHandledSequence("f",          std::bind(&MessageView::toggleSelectedPartFolding, &_messageView));
+    if (_generalKeymap.count("top") == 1)
+	addHandledSequence(_generalKeymap.find("top")->second, std::bind(&MessageView::moveToTop, &_messageView));
+    else
+	addHandledSequence("<Home>", std::bind(&MessageView::moveToTop, &_messageView));
+    if (_generalKeymap.count("bottom") == 1)
+	addHandledSequence(_generalKeymap.find("bottom")->second, std::bind(&MessageView::moveToTop, &_messageView));
+    else
+	addHandledSequence("<End>", std::bind(&MessageView::moveToBottom, &_messageView));
+    if (_keymap.count("savePart") == 1)
+	addHandledSequence(_keymap.find("savePart")->second, std::bind(&MessageView::saveSelectedPart, &_messageView));
+    else
+	addHandledSequence("<C-s>", std::bind(&MessageView::saveSelectedPart, &_messageView));
+    if (_keymap.count("toggleFolding") == 1)
+	addHandledSequence(_keymap.find("toggleFolding")->second, std::bind(&MessageView::toggleSelectedPartFolding, &_messageView));
+    else
+	addHandledSequence("f", std::bind(&MessageView::toggleSelectedPartFolding, &_messageView));
 
-    addHandledSequence("+",          std::bind(&ThreadMessageView::addTags, this));
-    addHandledSequence("-",          std::bind(&ThreadMessageView::removeTags, this));
+    if (_generalKeymap.count("addTags") == 1)
+	addHandledSequence(_generalKeymap.find("addTags")->second, std::bind(&ThreadMessageView::addTags, this));
+    else
+	addHandledSequence("+", std::bind(&ThreadMessageView::addTags, this));
+    if (_generalKeymap.count("removeTags") == 1)
+        addHandledSequence(_generalKeymap.find("removeTags")->second , std::bind(&ThreadMessageView::removeTags, this));
+    else
+	addHandledSequence("-", std::bind(&ThreadMessageView::removeTags, this));
 
-    addHandledSequence("r",          std::bind(&ThreadView::reply, &_threadView));
+    if (_generalKeymap.count("reply") == 1)
+	addHandledSequence(_generalKeymap.find("reply")->second, std::bind(&ThreadView::reply, &_threadView));
+    else
+	addHandledSequence("r", std::bind(&ThreadView::reply, &_threadView));
 
-    addHandledSequence(" ",          std::bind(&ThreadMessageView::nextMessage, this));
-    addHandledSequence("<C-n>",      std::bind(&ThreadMessageView::nextMessage, this));
-    addHandledSequence("<C-p>",      std::bind(&ThreadMessageView::previousMessage, this));
+    if (_keymap.count("nextMessage") == 1)
+	addHandledSequence(_keymap.find("nextMessage")->second, std::bind(&ThreadMessageView::nextMessage, this));
+    else
+	addHandledSequence("<C-n>",      std::bind(&ThreadMessageView::nextMessage, this));
+    if (_keymap.count("previousMessage") == 1)
+	addHandledSequence(_keymap.find("previousMessage")->second, std::bind(&ThreadMessageView::previousMessage, this));
+    else
+	addHandledSequence("<C-p>",      std::bind(&ThreadMessageView::previousMessage, this));
 }
 
 ThreadMessageView::~ThreadMessageView()

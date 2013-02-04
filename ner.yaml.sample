@@ -38,6 +38,44 @@ searches:
     - name: Inbox
       query: "tag:inbox"
 
+keymap:
+    general:
+        next: j
+        previous: k
+        nextPage: "<C-d>"
+        previousPage: "<C-u>"
+        top: gg
+        bottom: G
+        archiveThread: a
+        addTags: "+"
+        removeTags: "-"
+        open: "\n"
+        reply: r
+        closeView: q
+        closeSelectedView: x
+    main_window:
+        Quit: Q
+        search: s
+        ompose: m
+        openMessage: M
+        openThread: T
+        openViewView: ;
+        redraw: "<C-l>"
+        sigstp: "<C-z>"
+    email:
+        edit: e
+        attach: a
+        removeAttachment: d
+        send: y
+        toggleFolding: f
+    search_view:
+        refreshThreads: =
+    thread_message_view:
+        savePart: s
+        toggleFolding: f
+        nextMessage: "<C-n>"
+        previousMessage: "<C-p>"
+
 colors:
     # General
     cut_off_indicator                   : { fg: green,   bg: black }

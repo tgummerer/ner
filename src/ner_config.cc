@@ -146,6 +146,29 @@ void NerConfig::load()
                 { "Inbox", "tag:inbox" }
             };
 
+	const YAML::Node * keymap = document.FindValue("keymap");
+	if (keymap) {
+	    const YAML::Node * mainWindowKeys = keymap->FindValue("main_window");
+	    if (mainWindowKeys)
+		mainWindowKeys->Read(_mainWindowKeys);
+
+	    const YAML::Node * emailKeys = keymap->FindValue("email");
+	    if (emailKeys)
+		emailKeys->Read(_emailKeys);
+
+	    const YAML::Node * generalKeys = keymap->FindValue("general");
+	    if (generalKeys)
+		generalKeys->Read(_generalKeys);
+
+	    const YAML::Node * searchKeys = keymap->FindValue("search_view");
+	    if (searchKeys)
+		searchKeys->Read(_searchKeys);
+
+	    const YAML::Node * threadViewKeys = keymap->FindValue("thread_message_view");
+	    if (threadViewKeys)
+		threadViewKeys->Read(_threadViewKeys);
+	}
+
         /* Colors */
         const YAML::Node * colors = document.FindValue("colors");
         if (colors)
@@ -247,6 +270,31 @@ bool NerConfig::refreshView() const
 bool NerConfig::addSigDashes() const
 {
     return _addSigDashes;
+}
+
+const std::map<std::string, std::string> NerConfig::getGeneralKeyMap()
+{
+    return _generalKeys;
+}
+
+const std::map<std::string, std::string> NerConfig::getMainKeyMap()
+{
+    return _mainWindowKeys;
+}
+
+const std::map<std::string, std::string> NerConfig::getEmailKeyMap()
+{
+    return _emailKeys;
+}
+
+const std::map<std::string, std::string> NerConfig::getSearchKeyMap()
+{
+    return _searchKeys;
+}
+
+const std::map<std::string, std::string> NerConfig::getThreadViewKeyMap()
+{
+    return _threadViewKeys;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
